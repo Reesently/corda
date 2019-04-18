@@ -17,6 +17,7 @@ import net.corda.core.serialization.SerializationContext
 import net.corda.core.serialization.SerializationFactory
 import net.corda.core.utilities.contextLogger
 import java.io.NotSerializableException
+import java.lang.Exception
 import java.security.PublicKey
 import java.time.Duration
 import java.time.Instant
@@ -174,6 +175,10 @@ open class TransactionBuilder(
             val missingClass = e.message ?: throw e
             addMissingAttachment(missingClass, services)
             return true
+        } catch (e: ClassNotFoundException) {
+            val missingClass = e.message ?: throw e
+            addMissingAttachment(missingClass.replace(".", "/"), services)
+            return true
         } catch (e: TransactionDeserialisationException) {
             if (e.cause is NotSerializableException && e.cause.cause is ClassNotFoundException) {
                 val missingClass = e.cause.cause!!.message ?: throw e
@@ -194,6 +199,12 @@ open class TransactionBuilder(
         } catch (tre: TransactionResolutionException) {
         } catch (ise: IllegalStateException) {
         } catch (ise: IllegalArgumentException) {
+        } catch (any: Exception){
+            log.error("""The transaction currently built will not validate because of an unknown error most likely caused by a
+                        missing dependency in the transaction attachments.
+                        Please contact the developer of the CorDapp for further instructions.
+                    """.trimIndent(), any)
+            throw any
         }
         return false
     }
