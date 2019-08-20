@@ -159,6 +159,7 @@ see changes to this list.
 * Rodrigo Gonçalves (Itau Unibanco)
 * Roger Willis (R3)
 * Ross Burnett (Macquarie)
+* Reese Overstreet
 * Ross Nicoll (R3)
 * Rui Hu (Nordea)
 * s-matthew-english
